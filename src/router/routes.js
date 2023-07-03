@@ -46,12 +46,6 @@ const routes = [
         name: "About",
         component: () => import("pages/AboutPage"),
       },
-      // delete this customs after test
-      {
-        path: "/customs",
-        name: "Customs",
-        component: () => import("pages/CustomsPage"),
-      },
     ],
   },
 

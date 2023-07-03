@@ -12,6 +12,7 @@
     />
     <div class="photos__page">
       <VideosLeftSide class="hideSides" />
+
       <VideosMiddle />
       <VideosRightSide class="hideSides" />
     </div>

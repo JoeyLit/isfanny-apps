@@ -24,13 +24,13 @@
                   class="imageSrc"
                   :src="imageURL"
                   alt=""
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
               </div>
               <div v-else-if="!iHasEntered">
                 <img
                   src="../assets/isfanny-smile-logo.png"
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
               </div>
             </div>
@@ -62,13 +62,13 @@
                   class="imageSrc"
                   :src="imageURL"
                   alt=""
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
               </div>
               <div v-else-if="!iHasEntered">
                 <img
                   src="../assets/isfanny-smile-logo.png"
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
               </div>
             </div>
@@ -98,7 +98,7 @@
               :style="{
                 background: entry.isIntersecting
                   ? 'var(--color-white)'
-                  : 'black',
+                  : 'var(--color-light)',
               }"
             >
               <div v-if="vHasEntered">
@@ -110,15 +110,16 @@
                   loop
                   preload="metadata"
                   :alt="description"
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  poster="../assets/isfanny_video_poster_black_01.svg"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
-                <!-- :src="`https://res.cloudinary.com/mememe/video/upload/b_blurred:400:15,c_pad,h_480,w_480/$mainvideowidth_400/$overlaywidth_$mainvideowidth_div_4/c_scale,w_$mainvideowidth/l_video:isfanny_green_bg_a30niz/c_scale,e_loop:2,fl_relative,w_1.0,w_$overlaywidth/co_rgb:4ed957,e_make_transparent:8/fl_layer_apply,g_south_east,x_2,y_2/${public_id}`" -->
               </div>
+
               <div v-else-if="!vHasEntered">
                 <img
                   src="../assets/isfanny-smile-logo.png"
                   class="videoSrc"
-                  style="object-fit: cover; width: 100%; height: 300px"
+                  style="object-fit: cover; width: 100%; height: 200px"
                 />
               </div>
             </div>
@@ -135,8 +136,8 @@
       >
         <div class="text-image__container">
           <img
-            src="../assets/isFanny_text_backgrounda.png"
-            style="object-fit: cover; width: 100%; height: 300px"
+            src="../assets/isfanny_text_black_bg-01.svg"
+            style="object-fit: cover; width: 100%; height: 200px"
           />
           <section class="text__meme">
             <p>{{ description }}</p>
@@ -145,7 +146,7 @@
       >
     </div>
     <div v-if="type === 'text'" class="meme__cards--item-footer">
-      <p>{{ description.substring(0, 40) }}...</p>
+      <p class="q-ma-none">{{ description.substring(0, 15) }}...</p>
       <div class="meme__cards--item-footer-icons">
         <div class="like__meme">
           <i class="uil uil-eye"></i>
@@ -160,7 +161,7 @@
       </div>
     </div>
     <div v-else class="meme__cards--item-footer">
-      <p>{{ description.substring(0, 40) }}...</p>
+      <p class="q-ma-none">{{ description.substring(0, 15) }}...</p>
       <div class="meme__cards--item-footer-icons">
         <div class="like__meme">
           <i class="uil uil-eye"></i>
@@ -230,6 +231,7 @@ export default {
     "description",
     "public_id",
     "media_details",
+    "createdAt",
   ],
   components: { VIntersect, DownloadAlert },
   data() {
@@ -291,7 +293,7 @@ export default {
   border: 2px solid rgba(0, 0, 255, 0);
   /* box-shadow: 0 2px 5px rgba(34, 21, 21, 0.486); */
   box-shadow: var(--memeitem-box-shadow);
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   background-color: var(--color-white);
 }
 
@@ -307,7 +309,7 @@ export default {
   overflow: hidden;
   /* padding-top: 90%; */
   background-color: var(--color-white);
-  border-radius: 1rem 1rem 0 0;
+  /* border-radius: 1rem 1rem 0 0; */
 }
 
 /* .memes__container .meme__cards--item-media:hover::after {
@@ -354,10 +356,15 @@ export default {
   object-fit: cover;
   object-position: center;
   overflow-y: auto;
-  padding: 3rem 2rem;
+  padding: 0.5rem 0.5rem;
+
   color: black;
+  color: rgb(223, 223, 223);
   text-align: center;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .memes__container .text__meme p {
@@ -377,7 +384,7 @@ export default {
 .memes__container .meme__cards .meme__cards--item-footer {
   padding: 0.7rem 1rem;
   background-color: var(--color-white);
-  border-radius: 0 0 1rem 1rem;
+  /* border-radius: 0 0 1rem 1rem; */
 }
 
 .memes__container .meme__cards .meme__cards--item-footer p {
@@ -419,7 +426,7 @@ export default {
 
 @media screen and (max-width: 480px) {
   .memes__container .text-image__container img {
-    border-radius: 0 0 1rem 1rem;
+    /* border-radius: 0 0 1rem 1rem; */
   }
 }
 

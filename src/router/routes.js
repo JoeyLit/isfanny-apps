@@ -15,6 +15,43 @@ const routes = [
         component: () => import("pages/MemeDetails"),
         props: true,
       },
+      {
+        name: "Search",
+        path: "/search",
+        component: () => import("pages/MemesSearch"),
+      },
+      {
+        path: "/search-memes/:memeId",
+        name: "meme-details-alt",
+        component: () => import("pages/MemeDetailsAlt"),
+        props: true,
+      },
+      {
+        path: "/login",
+        name: "Login",
+        component: () => import("pages/LoginPage"),
+      },
+      {
+        path: "/register",
+        name: "Register",
+        component: () => import("pages/RegisterPage"),
+      },
+      {
+        path: "/addpost",
+        name: "AddPost",
+        component: () => import("pages/AddPostPage"),
+      },
+      {
+        path: "/about",
+        name: "About",
+        component: () => import("pages/AboutPage"),
+      },
+      // delete this customs after test
+      {
+        path: "/customs",
+        name: "Customs",
+        component: () => import("pages/CustomsPage"),
+      },
     ],
   },
 

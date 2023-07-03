@@ -72,10 +72,16 @@ import { InstagramLoader } from "vue-content-loader";
 import LoaderIsfanny from "./LoaderIsfanny.vue";
 import ErrorAlert from "./ErrorAlert.vue";
 
+import { useQuasar } from "quasar";
+
 export default {
+  setup() {
+    const $q = useQuasar();
+  },
   components: { MemeItem, LoaderIsfanny, ErrorAlert, InstagramLoader },
   data() {
     return {
+      dollarQ: this.$q,
       isLoadingMeme: false,
     };
   },
@@ -87,14 +93,33 @@ export default {
 
     async loadMore() {
       this.isLoadingMeme = true;
+      this.dollarQ.loading.show({});
       await this.fetchMoreRandomMemes();
       this.isLoadingMeme = false;
+      this.dollarQ.loading.hide({});
     },
   },
-  mounted() {
+  async mounted() {
     if (this.allRandomMemes.length === 0) {
-      this.fetchAllRandomMemes();
+      this.dollarQ.loading.show({});
+
+      await this.fetchAllRandomMemes();
+      this.dollarQ.loading.hide({});
     }
+    setTimeout(() => {
+      if (this.allRandomMemes.length === 0) {
+        this.dollarQ.notify({
+          type: "negative",
+          message: "Failed to load memes",
+          position: "top-right",
+        });
+        this.dollarQ.loading.show({});
+        setTimeout(() => {
+          this.dollarQ.loading.hide({});
+          console.log(this.allRandomMemes);
+        }, 7000);
+      }
+    }, 600);
   },
 };
 </script>

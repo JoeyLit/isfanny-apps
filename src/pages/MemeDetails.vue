@@ -99,6 +99,7 @@
               </section>
             </div>
           </div>
+
           <!-- description and tags details -->
           <div class="description-plus-tags">
             <div class="meme-details__description">
@@ -773,7 +774,7 @@ export default {
       this.$router.back();
     },
     goHome() {
-      this.$router.push({ path: "/home" });
+      this.$router.push({ name: "Home" });
     },
     copyUrl(memeId) {
       console.log(memeId);
@@ -1048,6 +1049,7 @@ export default {
   color: var(--color-dark);
   display: flex;
   align-items: baseline;
+  background-color: var(--color-light);
 }
 
 .meme-details__description .meme-details__icons a p {

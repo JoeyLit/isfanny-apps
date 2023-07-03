@@ -115,6 +115,7 @@
                   <div v-show="!vHasEntered">
                     <video
                       src=""
+                      poster="../../assets/isfanny_text_black_bg-01.svg"
                       style="object-fit: contain; width: 100%; height: 472px"
                     />
                   </div>
@@ -235,7 +236,12 @@ import { VIntersect } from "vuetensils/src/components";
 // import { VideoPlayer } from "@videojs-player/vue";
 // import "video.js/dist/video-js.css";
 
+import { useQuasar } from "quasar";
+
 export default {
+  setup() {
+    const $q = useQuasar();
+  },
   // props: ["memeCategory"],
   components: {
     LoaderIsfanny,
@@ -246,6 +252,7 @@ export default {
   },
   data() {
     return {
+      dollarQ: this.$q,
       isLoadingMeme: false,
       hasPhotoMemes: true,
       isFilteredMemes: false,
@@ -298,8 +305,10 @@ export default {
         category: this._category,
       };
       this.isLoadingMeme = true;
+      this.dollarQ.loading.show({});
       await this.fetchMoreVideoMemes(meta);
       this.isLoadingMeme = false;
+      this.dollarQ.loading.hide({});
     },
     loadNext() {
       this.nextPage(this.paging + 1);
@@ -332,18 +341,27 @@ export default {
       const videoSrc = document.querySelector(".videoSrc");
       videoSrc.pause();
     },
-    downloadMedia(index) {
-      this.isDownloadAlertShowing = true;
-      this.downloadMediaItemIndex = index;
+    // downloadMedia(index) {
+    //   this.isDownloadAlertShowing = true;
+    //   this.downloadMediaItemIndex = index;
 
-      setTimeout(() => {
-        this.isDownloadAlertShowing = false;
-      }, 3000);
+    //   setTimeout(() => {
+    //     this.isDownloadAlertShowing = false;
+    //   }, 3000);
+    // },
+    downloadMedia() {
+      this.dollarQ.notify({
+        type: "positive",
+        message: "Meme downloading.",
+        position: "top-right",
+      });
     },
   },
-  mounted() {
+  async created() {
     if (this.allVideoMemes.length === 0) {
-      this.fetchAllVideoMemes();
+      this.dollarQ.loading.show({});
+      await this.fetchAllVideoMemes();
+      this.dollarQ.loading.hide({});
     }
   },
   watch: {
@@ -391,7 +409,9 @@ export default {
         this.setVideoFilteredURL(this.filter);
         this.isFilteredMemes = true;
         // document.documentElement.scrollTop = 0;
+        this.dollarQ.loading.show({});
         await this.loadMore();
+        this.dollarQ.loading.hide({});
       }
     },
   },

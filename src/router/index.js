@@ -23,6 +23,8 @@ export default route(function (/* { store, ssrContext } */) {
     ? createWebHistory
     : createWebHashHistory;
 
+  // const createHistory = createWebHistory;
+
   const Router = createRouter({
     // scrollBehavior: () => ({ left: 0, top: 0 }),
     scrollBehavior(_1, _2, savedPosition) {

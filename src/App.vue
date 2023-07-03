@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import ScrollToTop from "./components/ScrollToTop.vue";
 import { defineComponent } from "vue";
 
@@ -32,13 +33,29 @@ export default defineComponent({
   mounted() {
     this.scrollToTop();
   },
+  async created() {
+    try {
+      const res = await axios.get(
+        "https://meme-api-v1.herokuapp.com/api/v1/auth/me",
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 });
 </script>
 
 <style>
 .dark__theme--variable {
   --color-white: hsl(252, 30%, 100%);
-  --color-light: hsl(252, 30%, 95%);
+  /* --color-light: hsl(252, 30%, 95%); */
+  --color-light: #ecf0f3;
   --color-gray: hsl(252, 15%, 65%);
   /* --color-primary: hsl(252, 75%, 60%); */
   --color-primary: hsl(252, 75%, 60%);
@@ -63,13 +80,15 @@ export default defineComponent({
 
   --bg-alert: rgb(242, 222, 222);
   --color-alert: rgb(185, 74, 72);
+
+  --neuro-dark: 16px 16px 32px #151313, -16px -16px 32px #252323;
 }
 
 /* mozilla theme */
 :root {
   /* --color-white: #2b2a33;
   --color-light: #1c1b22; */
-  --color-white: #0c0b0b;
+  --color-white: #1b1919;
   --color-light: #000000;
   --color-gray: hsl(252, 15%, 65%);
   --color-primary: hsl(252, 69%, 50%);

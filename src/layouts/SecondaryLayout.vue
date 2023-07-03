@@ -11,14 +11,9 @@
       style="outline: 2px solid var(--color-light)"
     >
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          @click="toggleLeftDrawer"
-          aria-label="Menu"
-          icon="menu"
-        />
+        <q-btn flat dense round @click="toggleLeftDrawer" aria-label="Menu"
+          ><i style="font-size: 1.2rem" class="uil uil-bars"></i
+        ></q-btn>
 
         <q-btn
           v-if="!isSmallNavSearchOpen"
@@ -39,21 +34,34 @@
         <q-space />
 
         <div
+          style="background: var(--color-light); color: var(--color-black)"
           v-if="$q.screen.gt.xs"
           class="YL__toolbar-input-container row no-wrap"
         >
           <q-input
+            v-model.trim="searchData"
+            @keyup.enter="handleFetchSearchValue"
             dense
             clearable
             clear-icon="close"
-            standout="bg-grey-9 text-white"
             v-model="search"
             placeholder="Search"
+            standout="bg-grey-9 text-white"
             class="col"
-            style="background: var(--color-light)"
+            style="border: 1px solid rgba(255, 255, 255, 0.1)"
           >
             <template v-slot:append>
-              <q-icon name="search" style="color: var(--color-black)" />
+              <q-icon
+                @click="handleFetchSearchValue"
+                :to="{
+                  name: 'Search',
+                }"
+                style="color: var(--color-dark)"
+                ><i
+                  style="font-size: 1.2rem; cursor: pointer"
+                  class="uil uil-search"
+                ></i
+              ></q-icon>
             </template>
           </q-input>
         </div>
@@ -61,43 +69,78 @@
         <div
           v-if="isSmallNavSearchOpen"
           class="YL__toolbar-input-container row no-wrap"
+          style="border: 1px solid rgba(255, 255, 255, 0.1)"
         >
           <q-input
+            v-model.trim="searchData"
+            @keyup.enter="handleFetchSearchValue"
             dense
             clearable
             clear-icon="close"
             outlined
-            rounded
             v-model="search"
+            standout="bg-grey-9 text-white"
             placeholder="Search"
-            class="col"
+            class="col text-secondary"
           >
             <template v-slot:append>
-              <q-icon name="search" style="color: var(--color-dark)" />
+              <q-icon
+                @click="handleFetchSearchValue"
+                :to="{
+                  name: 'Search',
+                }"
+                style="color: var(--color-dark)"
+                ><i
+                  style="font-size: 1.2rem; cursor: pointer"
+                  class="uil uil-search"
+                ></i
+              ></q-icon>
             </template>
           </q-input>
         </div>
 
         <q-space />
+        <!-- search button -->
+        <q-btn
+          @click="toggleSmallNavSearch"
+          v-if="$q.screen.lt.sm && !isSmallNavSearchOpen"
+          round
+          dense
+          flat
+        >
+          <i style="font-size: 1.2rem" class="uil uil-search"></i>
+        </q-btn>
 
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn round dense flat icon="filter" v-if="$q.screen.gt.sm">
-            <q-tooltip>Filter</q-tooltip>
+          <q-btn style="font-size: 0.8rem" round dense flat icon="sort">
+            <q-menu
+              auto-close
+              fit
+              :offset="[0, 15]"
+              transition-show="jump-down"
+              transition-hide="jump-up"
+              style="
+                background-color: var(--color-white);
+                color: var(--color-dark);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+              "
+            >
+              <q-list style="min-width: 100px">
+                <q-item clickable>
+                  <q-item-section @click="getSortData" data-sort="-createdAt"
+                    >Newest</q-item-section
+                  >
+                </q-item>
+                <q-item clickable>
+                  <q-item-section @click="getSortData" data-sort="createdAt"
+                    >Oldest</q-item-section
+                  >
+                </q-item>
+                <q-separator />
+              </q-list>
+            </q-menu>
           </q-btn>
 
-          <q-btn round dense flat icon="sort" v-if="$q.screen.gt.sm">
-            <q-tooltip>Sort by</q-tooltip>
-          </q-btn>
-          <q-btn
-            @click="toggleSmallNavSearch"
-            v-if="$q.screen.lt.sm && !isSmallNavSearchOpen"
-            round
-            dense
-            flat
-            icon="search"
-          >
-            <q-tooltip>Search</q-tooltip>
-          </q-btn>
           <!-- <q-btn round flat>
             <q-avatar size="26px">
               <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
@@ -106,10 +149,13 @@
           </q-btn> -->
 
           <!-- theme -->
-          <div class="nav__theme" @click="themeToggler">
+          <div
+            v-if="!isSmallNavSearchOpen"
+            class="nav__theme"
+            @click="themeToggler"
+          >
             <i class="uil uil-sun sun-icon active"></i>
             <i class="uil uil-moon moon-icon"></i>
-            <q-tooltip>Theme</q-tooltip>
           </div>
           <!-- <q-btn
             v-if="$q.screen.lt.sm"
@@ -125,7 +171,13 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" :width="240" class="color-deep">
+    <q-drawer
+      v-model="leftDrawerOpen"
+      elevated
+      overlay
+      :width="240"
+      class="color-deep"
+    >
       <q-scroll-area class="fit">
         <q-list padding>
           <!-- <q-item v-if="$q.screen.lt.md">
@@ -209,299 +261,17 @@
               <q-item-label>{{ link.text }}</q-item-label>
             </q-item-section>
           </q-item>
+          <q-item>
+            <q-item-section avatar>
+              <q-icon color="grey" name="eva-refresh-outline" />
+            </q-item-section>
+            <q-item-section @click="refreshPage">
+              <q-item-label>Reload</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>
-
-    <!-- right drawer -->
-    <!-- <q-drawer
-      v-model="rightDrawerOpen"
-      elevated
-      overlay
-      side="right"
-      :width="240"
-      class="color-deep"
-    >
-      <q-scroll-area class="fit">
-        <q-list padding>
-          <q-item-label header class="q-mt-md text-weight-bold text-uppercase">
-            Filter
-          </q-item-label>
-          <q-separator class="q-my-xs" />
-
-          <q-item
-            data-category="all"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-grids"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>All</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="education"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-book-open"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Education</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="music"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-music"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Music</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="movies"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-film"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Movies & TV</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="love"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-heart"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Love & Romance</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="sports"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-basketball"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Sports & Games</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="comedy"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-laughing"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Comedy</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="technology"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-robot"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Science & Technology</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="animals"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-cloud-sun"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Animals & Nature</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="politics"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-balance-scale"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Politics</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="celebrities"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-user-check"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Celebrities</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="religion"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-yin-yang"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Culture & Religion</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="fails"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-times-circle"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Fails</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="kids"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-baby-carriage"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Kids & Teens</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="adult"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-18-plus"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Adult</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="social"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-comments"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Social</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="food"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-pizza-slice"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Food</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-item
-            data-category="other"
-            @click="findMemeCategory"
-            dense
-            v-ripple
-            clickable
-            class="right-side__category-item"
-          >
-            <q-item-section avatar>
-              <i class="uil uil-folder-question"></i>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Others</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-scroll-area>
-    </q-drawer> -->
 
     <q-page-container>
       <router-view />
@@ -509,9 +279,6 @@
 
     <q-footer elevated>
       <FooterTab v-if="$q.screen.lt.sm" />
-      <!-- <q-toolbar>
-        <q-toolbar-title>Footer</q-toolbar-title>
-      </q-toolbar> -->
     </q-footer>
   </q-layout>
 </template>
@@ -519,7 +286,7 @@
 <script>
 import FooterTab from "../components/FooterTab.vue";
 import { ref } from "vue";
-import { fabYoutube } from "@quasar/extras/fontawesome-v6";
+// import { fabYoutube } from "@quasar/extras/fontawesome-v6";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -528,6 +295,8 @@ export default {
   data() {
     return {
       isSmallNavSearchOpen: false,
+      sortValue: "",
+      searchData: "",
     };
   },
   setup() {
@@ -542,28 +311,45 @@ export default {
     }
 
     return {
-      fabYoutube,
+      // fabYoutube,
       leftDrawerOpen,
-      rightDrawerOpen,
       search,
-      toggleRightDrawer,
       toggleLeftDrawer,
-      links1: [{ icon: "home", text: "Home", to: { name: "Home" } }],
+      links1: [
+        { icon: "eva-home-outline", text: "Home", to: { name: "Home" } },
+      ],
 
       links2: [
-        { icon: fabYoutube, text: "Videos", to: { name: "Videos" } },
-        { icon: "image", text: "Photos", to: { name: "Photos" } },
-        { icon: "photo", text: "GIFs", to: { name: "Gifs" } },
-        { icon: "print", text: "Texts", to: { name: "Texts" } },
+        { icon: "eva-video-outline", text: "Videos", to: { name: "Videos" } },
+        { icon: "eva-camera-outline", text: "Photos", to: { name: "Photos" } },
+        { icon: "eva-image-outline", text: "GIFs", to: { name: "Gifs" } },
+        {
+          icon: "eva-message-square-outline",
+          text: "Texts",
+          to: { name: "Texts" },
+        },
       ],
-      links3: [{ icon: "help", text: "About" }],
+      links3: [{ icon: "eva-question-mark-circle-outline", text: "About" }],
     };
   },
   computed: {
-    ...mapGetters(["getThemeColor", "getSwitchToCategory"]),
+    ...mapGetters([
+      "getThemeColor",
+      "getSwitchToCategory",
+      "getSort",
+      "searchValue",
+    ]),
 
     darkTheme() {
       return this.getThemeColor;
+    },
+    sortComputed() {
+      return this.getSort;
+    },
+  },
+  watch: {
+    sortComputed(newValue) {
+      this.sortValue = newValue;
     },
   },
   methods: {
@@ -575,6 +361,8 @@ export default {
       "clearPhotosMemes",
       "clearPage",
       "photoSwitchToCategory",
+      "fetchSort",
+      "fetchSearchValue",
     ]),
     themeToggler() {
       document.body.classList.toggle("dark__theme--variable");
@@ -612,6 +400,33 @@ export default {
       this.photoSwitchToCategory(true);
       this.clearPage();
       this.fetchCategory(dataCategory);
+    },
+    getSortData(e) {
+      const event = e.currentTarget;
+      const sortData = event.getAttribute("data-sort");
+      this.fetchSort(sortData);
+      const sortDropdownItem = document.querySelectorAll(
+        ".nav__sort--dropdown-item"
+      );
+      sortDropdownItem.forEach((item) => {
+        item.style.backgroundColor = "var(--color-white)";
+        item.style.color = "var(--color-dark)";
+      });
+      console.log(this.sortValue);
+      if (this.getSort === sortData) {
+        event.style.backgroundColor = "var(--color-primary)";
+        event.style.color = "white";
+      }
+    },
+    handleFetchSearchValue() {
+      if (this.searchData != "") {
+        this.fetchSearchValue(this.searchData);
+        this.$router.push({ name: "Search" });
+      }
+    },
+    refreshPage() {
+      this.$router.go();
+      console.log("wosop");
     },
   },
 };

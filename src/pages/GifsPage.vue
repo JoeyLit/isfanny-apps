@@ -12,6 +12,7 @@
     />
     <div class="photos__page">
       <GifsLeftSide class="hideSides" />
+
       <GifsMiddle />
       <GifsRightSide class="hideSides" />
     </div>

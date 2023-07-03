@@ -12,7 +12,9 @@
     />
     <div class="photos__page">
       <PhotosLeftSide class="hideSides" />
+
       <PhotosMiddle />
+
       <PhotosRightSide class="hideSides" />
     </div>
   </div>

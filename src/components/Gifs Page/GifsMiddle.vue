@@ -213,7 +213,12 @@ import LoaderIsfanny from "../LoaderIsfanny.vue";
 
 import { VImg } from "vuetensils/src/components";
 
+import { useQuasar } from "quasar";
+
 export default {
+  setup() {
+    const $q = useQuasar();
+  },
   // props: ["memeCategory"],
   components: {
     LoaderIsfanny,
@@ -224,6 +229,7 @@ export default {
   },
   data() {
     return {
+      dollarQ: this.$q,
       isLoadingMeme: false,
 
       isFilteredMemes: false,
@@ -281,7 +287,9 @@ export default {
         category: this._category,
       };
       this.isLoadingMeme = true;
+      this.dollarQ.loading.show({});
       await this.fetchMoreGifMemes(meta);
+      this.dollarQ.loading.hide({});
       this.isLoadingMeme = false;
     },
     loadNext() {
@@ -294,18 +302,19 @@ export default {
         this.previousPage(this.paging - 1);
       }
     },
-    downloadMedia(index) {
-      this.isDownloadAlertShowing = true;
-      this.downloadMediaItemIndex = index;
-
-      setTimeout(() => {
-        this.isDownloadAlertShowing = false;
-      }, 3000);
+    downloadMedia() {
+      this.dollarQ.notify({
+        type: "positive",
+        message: "Meme downloading.",
+        position: "top-right",
+      });
     },
   },
   async created() {
     if (this.allGifMemes.length === 0) {
+      this.dollarQ.loading.show({});
       await this.fetchAllGifMemes();
+      this.dollarQ.loading.hide({});
     }
   },
   mounted() {

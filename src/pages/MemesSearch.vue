@@ -16,10 +16,11 @@
             :memeId="meme._id"
             :public_id="meme.public_id"
             :media_details="meme.media_details"
+            :createdAt="meme.createdAt"
             class="meme__cards--item"
           />
         </div>
-        <Loader v-if="isLoadingMeme" />
+        <LoaderIsfanny v-if="isLoadingMeme" />
         <!-- button 85 -->
         <div
           v-if="!isLoadingMeme"
@@ -55,7 +56,7 @@
           </div>
         </div>
         <!-- show all memes instead -->
-        <div class="show-all-memes-instead">
+        <!-- <div class="show-all-memes-instead">
           <p class="show-all-memes-instead__para">
             You may also browse our recent memes
           </p>
@@ -70,21 +71,25 @@
               :memeId="meme._id"
               :public_id="meme.public_id"
               :media_details="meme.media_details"
+              :createdAt="meme.createdAt"
               class="meme__cards--item"
             />
           </div>
-        </div>
+        </div> -->
 
-        <Loader v-if="isLoadingMeme" />
+        <LoaderIsfanny v-if="isLoadingMeme" />
         <!-- button 85 -->
         <div
-          v-if="!isLoadingMeme"
+          v-if="!isLoadingMeme && allSearchMemes.length !== 0"
           style="display: flex; justify-content: center"
         >
           <button @click="loadMore" class="button-85" role="button">
             Load more
           </button>
         </div>
+        <button v-else @click="goHome" class="button-85" role="button">
+          Go Home
+        </button>
         <!-- End of button 85 -->
       </div>
     </div>
@@ -93,12 +98,12 @@
 
 <script>
 import SearchMemeItem from "../components/SearchMemeItem.vue";
-import MemeItem from "../components/MemeItem.vue";
+// import MemeItem from "../components/MemeItem.vue";
 import { mapGetters, mapActions } from "vuex";
 // import { InstagramLoader } from "vue-content-loader";
-import Loader from "../components/Loader.vue";
+import LoaderIsfanny from "../components/LoaderIsfanny.vue";
 export default {
-  components: { SearchMemeItem, MemeItem, Loader },
+  components: { SearchMemeItem, LoaderIsfanny },
   data() {
     return {
       isLoadingMeme: false,
@@ -158,6 +163,9 @@ export default {
       await this.fetchMoreSearchMemes(meta);
       this.isSearching = false;
     },
+    goHome() {
+      this.$router.push({ name: "Home" });
+    },
   },
   watch: {
     async watchSearchValue(newValue) {
@@ -180,13 +188,14 @@ export default {
 
 <style>
 .memes__container {
-  width: 86%;
+  width: 90%;
   margin: 3rem auto 0 auto;
 }
 
 .memes__container .meme__cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+
   gap: 1.3rem;
 }
 
@@ -197,7 +206,7 @@ export default {
 }
 
 .search__results p {
-  margin-top: 4rem;
+  margin-top: 2rem;
 }
 
 .no-search__results {
@@ -257,18 +266,24 @@ export default {
 
 @media screen and (max-width: 769px) {
   .memes__container {
-    width: 86%;
+    width: 90%;
   }
 
   .memes__container .meme__cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+
     gap: 1rem;
   }
 }
 
 @media screen and (max-width: 650px) {
   .memes__container {
-    width: 88%;
+    width: 92%;
+  }
+
+  .memes__container .meme__cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 }
 
@@ -280,7 +295,8 @@ export default {
   }
 
   .memes__container .meme__cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
   }
 
   .search__results {
@@ -301,6 +317,20 @@ export default {
   .isfanny-sad {
     margin-top: 1rem;
     width: 4rem;
+  }
+
+  @media screen and (max-width: 300px) {
+    .memes__container {
+      width: 100%;
+
+      margin: 2rem auto 0 auto;
+    }
+
+    .memes__container .meme__cards {
+      /* grid-template-columns: 1fr; */
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
   }
 }
 

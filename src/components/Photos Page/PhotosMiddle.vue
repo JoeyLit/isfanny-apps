@@ -206,24 +206,30 @@
 import { mapGetters, mapActions } from "vuex";
 import { InstagramLoader } from "vue-content-loader";
 import ErrorAlert from "../ErrorAlert.vue";
-import DownloadAlert from "../DownloadAlert.vue";
+// import DownloadAlert from "../DownloadAlert.vue";
 import { date } from "quasar";
 
 import LoaderIsfanny from "../LoaderIsfanny.vue";
 
 import { VImg } from "vuetensils/src/components";
 
+import { useQuasar } from "quasar";
+
 export default {
+  setup() {
+    const $q = useQuasar();
+  },
   // props: ["memeCategory"],
   components: {
     LoaderIsfanny,
     InstagramLoader,
     ErrorAlert,
-    DownloadAlert,
+    // DownloadAlert,
     VImg,
   },
   data() {
     return {
+      dollarQ: this.$q,
       isLoadingMeme: false,
       hasPhotoMemes: true,
       isFilteredMemes: false,
@@ -278,8 +284,10 @@ export default {
         category: this._category,
       };
       this.isLoadingMeme = true;
+      this.dollarQ.loading.show({});
       await this.fetchMorePhotoMemes(meta);
       this.isLoadingMeme = false;
+      this.dollarQ.loading.hide({});
     },
     loadNext() {
       this.nextPage(this.paging + 1);
@@ -291,18 +299,33 @@ export default {
         this.previousPage(this.paging - 1);
       }
     },
-    downloadMedia(index) {
-      this.isDownloadAlertShowing = true;
-      this.downloadMediaItemIndex = index;
+    // downloadMedia(index) {
+    //   this.dollarQ.notify({
+    //     type: "positive",
+    //     message: "Meme url copied to clipboard.",
+    //     position: "top-right",
+    //   });
+    //   this.isDownloadAlertShowing = true;
+    //   this.downloadMediaItemIndex = index;
 
-      setTimeout(() => {
-        this.isDownloadAlertShowing = false;
-      }, 3000);
+    //   setTimeout(() => {
+    //     this.isDownloadAlertShowing = false;
+    //   }, 3000);
+    // },
+    downloadMedia() {
+      this.dollarQ.notify({
+        type: "positive",
+        message: "Meme downloading.",
+        position: "top-right",
+      });
     },
   },
+
   async created() {
     if (this.allPhotoMemes.length === 0) {
+      this.dollarQ.loading.show({});
       await this.fetchAllPhotoMemes();
+      this.dollarQ.loading.hide({});
     }
   },
   mounted() {
@@ -339,6 +362,7 @@ export default {
     },
     async sorting(newValue) {
       if (this.activateFilter === true) {
+        this.dollarQ.loading.show({});
         console.log("active user activated");
         this.clearPhotosPageNumber();
 
@@ -346,6 +370,8 @@ export default {
         this.setFilteredURL(this.filter);
         this.isFilteredMemes = true;
         document.documentElement.scrollTop = 0;
+
+        setTimeout(this.dollarQ.loading.hide({}), 6000);
       } else {
         console.log("active user NOT activated");
 
@@ -355,7 +381,9 @@ export default {
         this.setFilteredURL(this.filter);
         this.isFilteredMemes = true;
         // document.documentElement.scrollTop = 0;
+        this.dollarQ.loading.show({});
         await this.loadMore();
+        this.dollarQ.loading.hide({});
       }
     },
   },

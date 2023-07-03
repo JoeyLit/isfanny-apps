@@ -1,6 +1,10 @@
 <template>
   <div class="q-pa-md hero__container">
-    <img class="q-ma-none logo" src="~assets/isfanny-smile-logo.png" alt="" />
+    <img
+      class="q-ma-none logo"
+      src="~assets/isfanny-smile-logo.png"
+      alt="isfanny logo"
+    />
     <div>
       <!-- <h4 class="q-ma-none"><span class="text-weight-bolder">is</span>Fanny</h4> -->
       <h5 class="q-ma-none">

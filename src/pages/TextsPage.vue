@@ -12,7 +12,14 @@
     />
     <div class="photos__page">
       <TextsLeftSide class="hideSides" />
+      <!-- <transition
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+        appear
+        :duration="300"
+      > -->
       <TextsMiddle />
+      <!-- </transition> -->
       <TextsRightSide class="hideSides" />
     </div>
   </div>

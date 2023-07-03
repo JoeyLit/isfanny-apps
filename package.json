@@ -8,7 +8,8 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
     "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "test": "echo \"No test specified\" && exit 0"
+    "icons": "icongenie generate -i isfanny_icongenie-01.png --skip-trim  --splashscreen-color f7db49 --theme-color: f7db49",
+    "buildAndroid": "quasar build -m cordova -T android"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",

@@ -113,15 +113,6 @@
                   poster="../assets/isfanny_video_poster_black_01.svg"
                   style="object-fit: cover; width: 100%; height: 200px"
                 />
-                <!-- <VideoPlayer
-                  :src="imageURL"
-                  :autoplay="true"
-                  :loop="true"
-                  :muted="true"
-                  :alt="description"
-                  style="object-fit: cover; width: 100%; height: 200px"
-                /> -->
-                <!-- :src="`https://res.cloudinary.com/mememe/video/upload/b_blurred:400:15,c_pad,h_480,w_480/$mainvideowidth_400/$overlaywidth_$mainvideowidth_div_4/c_scale,w_$mainvideowidth/l_video:isfanny_green_bg_a30niz/c_scale,e_loop:2,fl_relative,w_1.0,w_$overlaywidth/co_rgb:4ed957,e_make_transparent:8/fl_layer_apply,g_south_east,x_2,y_2/${public_id}`" -->
               </div>
               <div v-else-if="!vHasEntered">
                 <img

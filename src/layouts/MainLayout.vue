@@ -11,14 +11,9 @@
       style="outline: 2px solid var(--color-light)"
     >
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          @click="toggleLeftDrawer"
-          aria-label="Menu"
-          icon="menu"
-        />
+        <q-btn flat dense round @click="toggleLeftDrawer" aria-label="Menu"
+          ><i style="font-size: 1.2rem" class="uil uil-bars"></i
+        ></q-btn>
 
         <q-btn
           v-if="!isSmallNavSearchOpen"
@@ -36,6 +31,21 @@
           ><span class="text-h6 text-weight-bold isfanny-logo-text">Fanny</span>
         </q-btn>
 
+        <q-btn
+          v-if="$q.screen.gt.sm"
+          color="primary"
+          icon="eva-plus-square-outline"
+          label="Post Meme"
+          :to="{ name: 'AddPost' }"
+        />
+        <q-btn
+          style="font-size: 0.6rem"
+          v-if="$q.screen.lt.md"
+          color="primary"
+          icon="eva-plus-square-outline"
+          :to="{ name: 'AddPost' }"
+        />
+
         <q-space />
 
         <div
@@ -44,16 +54,25 @@
           class="YL__toolbar-input-container row no-wrap"
         >
           <q-input
+            v-model.trim="searchData"
+            @keyup.enter="handleFetchSearchValue"
             dense
             clearable
             clear-icon="close"
-            v-model="search"
             placeholder="Search"
             standout="bg-grey-9 text-white"
             class="col"
+            style="border: 1px solid rgba(255, 255, 255, 0.1)"
           >
             <template v-slot:append>
-              <q-icon name="search" style="color: var(--color-black)" />
+              <q-icon
+                @click="handleFetchSearchValue"
+                :to="{
+                  name: 'Search',
+                }"
+                style="color: var(--color-dark)"
+                ><i style="font-size: 1.2rem" class="uil uil-search"></i
+              ></q-icon>
             </template>
           </q-input>
         </div>
@@ -61,19 +80,29 @@
         <div
           v-if="isSmallNavSearchOpen"
           class="YL__toolbar-input-container row no-wrap"
+          style="border: 1px solid rgba(255, 255, 255, 0.1)"
         >
           <q-input
+            v-model.trim="searchData"
+            @keyup.enter="handleFetchSearchValue"
             dense
             clearable
             clear-icon="close"
             outlined
-            rounded
             v-model="search"
+            standout="bg-grey-9 text-white"
             placeholder="Search"
-            class="col"
+            class="col text-secondary"
           >
             <template v-slot:append>
-              <q-icon name="search" style="color: var(--color-dark)" />
+              <q-icon
+                @click="handleFetchSearchValue"
+                :to="{
+                  name: 'Search',
+                }"
+                style="color: var(--color-dark); cursor: pointer"
+                ><i style="font-size: 1.2rem" class="uil uil-search"></i
+              ></q-icon>
             </template>
           </q-input>
         </div>
@@ -87,9 +116,9 @@
             round
             dense
             flat
-            icon="search"
+            style="color: var(--color-dark)"
           >
-            <q-tooltip>Search</q-tooltip>
+            <i style="font-size: 1.2rem" class="uil uil-search"></i>
           </q-btn>
           <!-- <q-btn round flat>
             <q-avatar size="26px">
@@ -100,9 +129,8 @@
 
           <!-- theme -->
           <div class="nav__theme" @click="themeToggler">
-            <i class="uil uil-sun sun-icon active"></i>
-            <i class="uil uil-moon moon-icon"></i>
-            <q-tooltip>Toggle theme</q-tooltip>
+            <i class="uil uil-sun sun-icon"></i>
+            <i class="uil uil-moon moon-icon active"></i>
           </div>
           <i
             @click="closeMemeDetails"
@@ -195,7 +223,13 @@
 
           <q-separator class="q-mt-md q-mb-xs" />
 
-          <q-item v-for="link in links3" :key="link.text" v-ripple clickable>
+          <q-item
+            v-for="link in links3"
+            :key="link.text"
+            :to="link.to"
+            v-ripple
+            clickable
+          >
             <q-item-section avatar>
               <q-icon color="grey" :name="link.icon" />
             </q-item-section>
@@ -203,12 +237,34 @@
               <q-item-label>{{ link.text }}</q-item-label>
             </q-item-section>
           </q-item>
+          <q-item @click="handleLogout" v-ripple clickable>
+            <q-item-section avatar>
+              <q-icon color="grey" name="eva-log-out-outline" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Logout</q-item-label>
+            </q-item-section>
+          </q-item>
+          <!-- <q-item>
+            <q-item-section>
+              <q-item-label @click="handleLogout">Logout</q-item-label>
+            </q-item-section>
+          </q-item> -->
         </q-list>
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
       <router-view />
+
+      <!-- <transition
+        enter-active-class="animated slideInLeft"
+        leave-active-class="animated slideInLeft"
+        appear
+        :duration="300"
+      >
+        <router-view />
+      </transition> -->
     </q-page-container>
 
     <q-footer>
@@ -223,7 +279,7 @@
 <script>
 import FooterTab from "../components/FooterTab.vue";
 import { ref } from "vue";
-import { fabYoutube } from "@quasar/extras/fontawesome-v6";
+// import { fabYoutube } from "@quasar/extras/fontawesome-v6";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
@@ -232,6 +288,7 @@ export default {
   data() {
     return {
       isSmallNavSearchOpen: false,
+      searchData: "",
     };
   },
   setup() {
@@ -241,30 +298,48 @@ export default {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     }
     return {
-      fabYoutube,
+      // fabYoutube,
       leftDrawerOpen,
       search,
       toggleLeftDrawer,
-      links1: [{ icon: "home", text: "Home", to: { name: "Home" } }],
+      links1: [
+        { icon: "eva-home-outline", text: "Home", to: { name: "Home" } },
+      ],
 
       links2: [
-        { icon: fabYoutube, text: "Videos", to: { name: "Videos" } },
-        { icon: "image", text: "Photos", to: { name: "Photos" } },
-        { icon: "photo", text: "GIFs", to: { name: "Gifs" } },
-        { icon: "print", text: "Texts", to: { name: "Texts" } },
+        { icon: "eva-video-outline", text: "Videos", to: { name: "Videos" } },
+        { icon: "eva-camera-outline", text: "Photos", to: { name: "Photos" } },
+        { icon: "eva-image-outline", text: "GIFs", to: { name: "Gifs" } },
+        {
+          icon: "eva-message-square-outline",
+          text: "Texts",
+          to: { name: "Texts" },
+        },
       ],
-      links3: [{ icon: "help", text: "About" }],
+      links3: [
+        {
+          icon: "eva-question-mark-circle-outline",
+          text: "About",
+          to: { name: "About" },
+        },
+        { icon: "eva-log-in-outline", text: "Login", to: { name: "Login" } },
+        {
+          icon: "eva-upload-outline",
+          text: "Sign up",
+          to: { name: "Register" },
+        },
+      ],
     };
   },
   computed: {
-    ...mapGetters(["getThemeColor"]),
+    ...mapGetters(["getThemeColor", "searchValue"]),
 
     darkTheme() {
       return this.getThemeColor;
     },
   },
   methods: {
-    ...mapActions(["fetchThemeColor"]),
+    ...mapActions(["fetchThemeColor", "fetchSearchValue"]),
     themeToggler() {
       document.body.classList.toggle("dark__theme--variable");
       document.querySelector(".moon-icon").classList.toggle("active");
@@ -283,6 +358,15 @@ export default {
     },
     closeMemeDetails() {
       this.$router.back();
+    },
+    handleFetchSearchValue() {
+      if (this.searchData != "") {
+        this.fetchSearchValue(this.searchData);
+        this.$router.push({ name: "Search" });
+      }
+    },
+    handleLogout() {
+      localStorage.removeItem("token");
     },
   },
 };
@@ -345,9 +429,13 @@ export default {
   border-radius: 5px;
   border: 0.5px solid rgba(128, 128, 128, 0.164);
 
-  padding: 0 0.3rem;
+  padding: 0 0.4rem;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   /* z-index: 1000; */
+}
+
+.close-meme-details:hover {
+  background-color: var(--color-primary);
 }
 
 @keyframes theme-rotate {
